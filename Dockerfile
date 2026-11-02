@@ -52,7 +52,7 @@ LAKE
 RUN lake update \
  && lake exe cache get \
  && git -C .lake/packages/mathlib rev-parse HEAD | grep -q "^${MATHLIB_REV}" \
- && time lake build Solutions.SmokeTest \
+ && lake build Solutions.SmokeTest \
  && rm -rf /root/.cache/mathlib \
  && du -sh .lake
 
