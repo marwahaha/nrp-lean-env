@@ -1,0 +1,38 @@
+# One proof check on NRP.
+#
+#   kubectl create configmap lean-check-files --from-file=Sol_example.lean=k8s/example/Sol_example.lean
+#   kubectl create -f k8s/check-job.yaml
+#   kubectl logs -f job/<name printed above>
+#   kubectl delete configmap lean-check-files
+#
+# Policy notes (https://nrp.ai/documentation/userdocs/start/policies/):
+#   - a Job, with a command that ends by itself; never sleep in a Job
+#   - requests = limits, 1 CPU / 2Gi is the size exempt from utilisation checks; raise both together if a proof needs more
+#   - no GPU, no tolerations, no priorityClassName
+#   - Job specs are readable by every cluster user: nothing secret goes in here
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: lean-check-
+  labels: { app: prove2me-lean-check }
+spec:
+  backoffLimit: 0                 # a failing proof is not a transient error; do not retry
+  ttlSecondsAfterFinished: 900    # self-delete 15 min after finishing; read the log before then
+  template:
+    metadata:
+      labels: { app: prove2me-lean-check }
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: files
+          configMap: { name: lean-check-files }
+      containers:
+        - name: lean
+          image: ghcr.io/prove2me/nrp-lean-env:v4.33.1-0df444a
+          args: ["Solutions.Sol_example"]
+          volumeMounts:
+            # one entry per file; subPath mounts keep the rest of the workspace tree intact
+            - { name: files, mountPath: /opt/prove2me_workspace/Solutions/Sol_example.lean, subPath: Sol_example.lean }
+          resources:
+            requests: { cpu: "1", memory: 2Gi, ephemeral-storage: 2Gi }
+            limits:   { cpu: "1", memory: 2Gi, ephemeral-storage: 2Gi }

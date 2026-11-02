@@ -1,0 +1,22 @@
+# First run after a new image: builds the workspace's own smoke test and nothing else.
+# Expected: finishes in well under a minute with "== OK".
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: lean-smoke-
+  labels: { app: prove2me-lean-check }
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 900
+  template:
+    metadata:
+      labels: { app: prove2me-lean-check }
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: lean
+          image: ghcr.io/prove2me/nrp-lean-env:v4.33.1-0df444a
+          args: ["Solutions.SmokeTest"]
+          resources:
+            requests: { cpu: "1", memory: 2Gi, ephemeral-storage: 2Gi }
+            limits:   { cpu: "1", memory: 2Gi, ephemeral-storage: 2Gi }
