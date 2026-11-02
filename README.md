@@ -4,14 +4,14 @@ Container image for checking Lean proofs against the Prove2me default environmen
 Lean v4.33.1, Mathlib `0df444a360eaa60ab8c11dca51a86af692955474` with the prebuilt cache,
 and [prove2me_workspace](https://github.com/prove2me/prove2me_workspace) at `/opt/prove2me_workspace`.
 
-Image: `ghcr.io/prove2me/nrp-lean-env:v4.33.1-0df444a` (`latest` moves; pin the full tag).
+Image: `ghcr.io/marwahaha/nrp-lean-env:v4.33.1-0df444a` (`latest` moves; pin the full tag).
 
 ## Use
 
 ```bash
 docker run --rm \
   -v "$PWD/k8s/example/Sol_example.lean:/opt/prove2me_workspace/Solutions/Sol_example.lean:ro" \
-  ghcr.io/prove2me/nrp-lean-env:v4.33.1-0df444a Solutions.Sol_example
+  ghcr.io/marwahaha/nrp-lean-env:v4.33.1-0df444a Solutions.Sol_example
 ```
 
 The entrypoint is `check <module>...` (default `Solutions`). Place files as the platform does:

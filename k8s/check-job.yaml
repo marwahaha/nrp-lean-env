@@ -23,7 +23,7 @@ spec:
           configMap: { name: lean-check-files }
       containers:
         - name: lean
-          image: ghcr.io/prove2me/nrp-lean-env:v4.33.1-0df444a
+          image: ghcr.io/marwahaha/nrp-lean-env:v4.33.1-0df444a
           args: ["Solutions.Sol_example"]
           volumeMounts:
             - { name: files, mountPath: /opt/prove2me_workspace/Solutions/Sol_example.lean, subPath: Sol_example.lean }

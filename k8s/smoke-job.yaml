@@ -14,7 +14,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: lean
-          image: ghcr.io/prove2me/nrp-lean-env:v4.33.1-0df444a
+          image: ghcr.io/marwahaha/nrp-lean-env:v4.33.1-0df444a
           args: ["Solutions.SmokeTest"]
           resources:
             requests: { cpu: "2", memory: 6Gi, ephemeral-storage: 4Gi }
