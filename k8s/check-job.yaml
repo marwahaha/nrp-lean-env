@@ -7,7 +7,7 @@
 #
 # Policy notes (https://nrp.ai/documentation/userdocs/start/policies/):
 #   - a Job, with a command that ends by itself; never sleep in a Job
-#   - requests = limits, 1 CPU / 2Gi is the size exempt from utilisation checks; raise both together if a proof needs more
+#   - requests = limits; sized generously at first, then trimmed to the peak the log reports
 #   - no GPU, no tolerations, no priorityClassName
 #   - Job specs are readable by every cluster user: nothing secret goes in here
 apiVersion: batch/v1
@@ -34,5 +34,5 @@ spec:
             # one entry per file; subPath mounts keep the rest of the workspace tree intact
             - { name: files, mountPath: /opt/prove2me_workspace/Solutions/Sol_example.lean, subPath: Sol_example.lean }
           resources:
-            requests: { cpu: "1", memory: 2Gi, ephemeral-storage: 2Gi }
-            limits:   { cpu: "1", memory: 2Gi, ephemeral-storage: 2Gi }
+            requests: { cpu: "2", memory: 6Gi, ephemeral-storage: 4Gi }
+            limits:   { cpu: "2", memory: 6Gi, ephemeral-storage: 4Gi }

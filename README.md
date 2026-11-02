@@ -60,7 +60,7 @@ With no arguments `check` builds the whole `Solutions` library.
 - `smoke-job.yaml` builds the workspace smoke test. Run it once after every new image.
 - `check-job.yaml` mounts files from a ConfigMap named `lean-check-files` and builds one module. The header comment has the exact commands.
 
-Both request exactly 1 CPU, 2 GiB memory, and 2 GiB ephemeral storage, with limits equal to requests, no retries, and a 15 minute self-delete. Read the log before the Job disappears, or raise `ttlSecondsAfterFinished`. Do not add GPUs, tolerations, or a priority class. Job specs are readable by every cluster user, so nothing secret belongs in them.
+Both request 2 CPU, 6 GiB memory, and 4 GiB ephemeral storage, with limits equal to requests, no retries, and a 15 minute self-delete. The entrypoint prints the peak heap and peak mapped-file memory at the end of every run; after a few real proofs, trim the requests toward those peaks so usage stays within the cluster's 20 to 150 percent band. Read the log before the Job disappears, or raise `ttlSecondsAfterFinished`. Do not add GPUs, tolerations, or a priority class. Job specs are readable by every cluster user, so nothing secret belongs in them.
 
 ## Changing the pins
 

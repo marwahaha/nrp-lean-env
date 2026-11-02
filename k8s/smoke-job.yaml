@@ -18,5 +18,5 @@ spec:
           image: ghcr.io/prove2me/nrp-lean-env:v4.33.1-0df444a
           args: ["Solutions.SmokeTest"]
           resources:
-            requests: { cpu: "1", memory: 2Gi, ephemeral-storage: 2Gi }
-            limits:   { cpu: "1", memory: 2Gi, ephemeral-storage: 2Gi }
+            requests: { cpu: "2", memory: 6Gi, ephemeral-storage: 4Gi }
+            limits:   { cpu: "2", memory: 6Gi, ephemeral-storage: 4Gi }
