@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Usage inside a Job:  check <module>...   e.g.  check Solutions.Sol_foo
-# Files are expected to have been placed under $WORKSPACE (ConfigMap, git clone, or initContainer).
+# Usage: check <module>...   (default: Solutions)
 set -euo pipefail
 cd "${WORKSPACE:-/opt/prove2me_workspace}"
 if [ "$#" -eq 0 ]; then set -- Solutions; fi
@@ -8,10 +7,7 @@ echo "== lean: $(lean --version)"
 echo "== mathlib: $(git -C .lake/packages/mathlib rev-parse HEAD 2>/dev/null || echo unknown)"
 echo "== building: $*"
 
-# Sample the container's cgroup memory every 0.5 s and keep the peaks of
-#   anon  = Lean's own heap, the figure that can trigger an OOM kill
-#   file  = memory-mapped Mathlib .olean pages, reclaimable by the kernel
-# so Job requests can be sized to what a proof really needs.
+# Sample cgroup memory: peak anon (heap) and file (mapped .olean) pages.
 STAT=""
 for f in /sys/fs/cgroup/memory.stat /sys/fs/cgroup/memory/memory.stat; do [ -r "$f" ] && STAT=$f && break; done
 PEAKS=$(mktemp)

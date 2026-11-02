@@ -1,5 +1,4 @@
-# First run after a new image: builds the workspace's own smoke test and nothing else.
-# Expected: finishes in well under a minute with "== OK".
+# Builds the workspace smoke test.
 apiVersion: batch/v1
 kind: Job
 metadata:

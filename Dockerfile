@@ -1,10 +1,5 @@
 # syntax=docker/dockerfile:1
-# Lean 4.33.1 + Mathlib (platform default env) + prove2me workspace, prebuilt.
-# One image, used by every proof-check Job on NRP. Build once in CI, pull many times.
-#
-#   docker build --build-arg MATHLIB_REV=0df444a360eaa60ab8c11dca51a86af692955474 \
-#                --build-arg LEAN_TOOLCHAIN=leanprover/lean4:v4.33.1 -t nrp-lean-env .
-#
+# Lean + Mathlib (prebuilt cache) + prove2me workspace.
 FROM ubuntu:24.04
 
 ARG LEAN_TOOLCHAIN=leanprover/lean4:v4.33.1
@@ -21,12 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git zstd python3 jq libgmp10 \
     && rm -rf /var/lib/apt/lists/*
 
-# 1. elan + the exact toolchain
+# elan + toolchain
 RUN curl -sSfL https://elan.lean-lang.org/elan-init.sh \
       | sh -s -- -y --no-modify-path --default-toolchain "${LEAN_TOOLCHAIN}" \
     && lean --version
 
-# 2. the prove2me workspace, pinned exactly as references/lean-setup.md says
+# workspace, pinned per references/lean-setup.md
 RUN git clone --depth 1 "${WORKSPACE_REPO}" "${WORKSPACE}"
 WORKDIR ${WORKSPACE}
 RUN printf '%s\n' "${LEAN_TOOLCHAIN}" > lean-toolchain \
@@ -47,8 +42,7 @@ lean_lib «Theorems» where
 lean_lib «Solutions» where
 LAKE
 
-# 3. Mathlib: shallow-fetch the pinned commit, pull the prebuilt cache, verify with the smoke test.
-#    This layer is the big one (~6 GB). It changes only when MATHLIB_REV changes.
+# Mathlib: fetch, prebuilt cache, verify pin, smoke test
 RUN lake update \
  && lake exe cache get \
  && git -C .lake/packages/mathlib rev-parse HEAD | grep -q "^${MATHLIB_REV}" \
@@ -56,7 +50,7 @@ RUN lake update \
  && rm -rf /root/.cache/mathlib \
  && du -sh .lake
 
-# 4. tiny entrypoint: build whatever Solutions/Theorems/Definitions files were added at run time.
+# entrypoint
 COPY check.sh /usr/local/bin/check
 RUN chmod +x /usr/local/bin/check
 ENTRYPOINT ["/usr/local/bin/check"]
